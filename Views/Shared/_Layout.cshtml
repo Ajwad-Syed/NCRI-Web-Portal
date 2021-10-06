@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - NCRI WEB PORTAL For MISC Activites</title>
+    <link href="@Url.Content("~/Content/kendo/2021.2.616/kendo.bootstrap-v4.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/kendo/2021.2.616/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2021.2.616/angular.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2021.2.616/jszip.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2021.2.616/kendo.all.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+        .overlay {
+            position: absolute;
+            background: #fff;
+            opacity: .8;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1
+        }
+
+        .bodybg {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            background: rgb(255 255 255 / 5%);
+            width: 100%;
+            display: block;
+            text-align: center;
+            height: 100vh;
+            color: #FFF;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+
+        .wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            text-align: center;
+            transform: translateX(-50%);
+            display: block;
+        }
+
+        #loader {
+            position: relative;
+            top: 50%;
+        }
+
+        .k-loader-spinner-3.k-loader-lg .k-loader-canvas {
+            width: 120px;
+            height: 120px;
+        }
+
+        .k-loader-lg .k-loader-segment {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .container {
+            max-width: 100%;
+        }
+
+        .jumbotron {
+            padding: 2rem;
+        }
+
+        .navbar-brand img {
+            max-height: 80px;
+            margin: 24px 0;
+        }
+
+        .inActive {
+            border: 1px solid;
+            font-weight: bold;
+            padding: 7px 16px;
+        }
+
+        #button {
+            display: inline-block;
+            background-color: #198754;
+            width: 200px;
+            height: 50px;
+            line-height: 48px;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="k-content bg-light ">
+    <a href="//192.168.100.161:82/Home/Index" id="button">Back to Main</a>
+    <nav class="navbar navbar-expand navbar-light bg-light flex-column">
+        <a class="navbar-brand mx-auto" href="#"><img src="~/Images/NCRI-LOGO.png"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul id="menu" class="nav nav-pills">
+                <li class="nav-item"> <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active":"" )" href="/Home/Index">Home</a></li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Management" ? "active" :"" )" href="/Management/ManagementIndex">Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Accounts" ? "active" :"" )" href="/Accounts/AccountsIndex">Accounts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "NewOnboardEnrollment" ? "active" :"" )" href="/NewOnboardEnrollment/OnBoardIndex">On Board Form</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Communications" ? "active" :"" )" href="/Communications/CommunicationsIndex">Communication</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+        <div class="container">
+            <section class="jumbotron text-center">
+                <div class="container">
+                    <h4 class="jumbotron-heading">@ViewBag.Title</h4>
+                    <p class="lead-text text-muted">@ViewBag.Message</p>
+                </div>
+                @if (ViewContext.RouteData.Values["Controller"].ToString() == "Management")
+                {
+                    <ul class="nav justify-content-center">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ManageAllocationsWithAccountsNo" ? "inActive" : "" )" href="/Management/ManageAllocationsWithAccountsNo">Manage Allocations With Respect To Acccount No</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ManageAllocationsWithCIF" ? "inActive" : "" )" href="/Management/ManageAllocationsWithCIF">Manage Allocations With Respect To CIF</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ManageAccountsWithdrawal" ? "inActive" : "" )" href="/Management/ManageAccountsWithdrawal">Manage Accounts Withdrawal</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ManageBanks" ? "inActive" : "" )" href="/Management/ManageBanks">Manage Banks</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "UserManagementIndex" ? "inActive" : "" )" href="/Management/UserManagementIndex">Manage Users</a>
+                        </li>
+                    </ul>
+                }
+                @if (ViewContext.RouteData.Values["Controller"].ToString() == "Accounts")
+                {
+                    <ul class="nav justify-content-center">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "BackToBankAccounts" ? "inActive" : "" )" href="/Accounts/BackToBankAccounts">Back To Bank Accounts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "SortAccounts" ? "inActive" : "" )" href="/Accounts/SortAccounts">Sort</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "DuplicateCaseIDsAccounts" ? "inActive" : "" )" href="/Accounts/DuplicateCaseIDsAccounts">Duplicate Case Ids Accounts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "OnTheBasisOfOutstanding" ? "inActive" : "" )" href="/Accounts/OnTheBasisOfOutstanding">Active Accounts</a>
+                        </li>
+                    </ul>
+                }
+                @if (ViewContext.RouteData.Values["Controller"].ToString() == "Communications")
+                {
+                    <ul class="nav justify-content-center">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "SendEmail" ? "inActive" : "" )" href="/Communications/SendEmail">Send Email</a>
+                        </li>
+                    </ul>
+                }
+            </section>
+            @RenderSection("featured", required: false)
+            @RenderBody()
+         
+        </div>
+    </main>
+
+    <footer class="footer text-center d-flex align-items-center">
+        <div class="container pb-0">
+            <hr />
+            <p>NCRI - Web Portal ©@DateTime.Now.Year</p>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            $("#responsive-panel").kendoResponsivePanel({
+                breakpoint: 768,
+                autoClose: false,
+            });
+            orientation: "top"
+            $("#menu").kendoMenu();
+        });
+        function onclick(e) {
+            $("#responsive-panel").getKendoResponsivePanel().toggle();
+        }
+    </script>
+</body>
+</html>

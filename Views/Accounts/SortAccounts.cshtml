@@ -1,0 +1,247 @@
+﻿<div class="container col-md-9 border-right border-top border-left border-bottom">
+    <h4>Search</h4>
+    <hr />
+    <form id="FilterForm"></form>
+</div>
+<br />
+<h4>Search Results</h4>
+<hr />
+<div class="row">
+    <h5 class="col-6">New Accounts:</h5>
+    <h5 class="col-6">Old Accounts:</h5>
+</div>
+<div class="row">
+    <div class="col-md-6 float-right" id="NewGrid"></div>
+    <div class="col-md-6 float-right" id="OldGrid"></div>
+</div>
+<script>
+    $(document).ready(function () {
+        filterForm();
+    });
+    function filterForm() {
+        var form = $("#FilterForm").kendoForm({
+            buttonsTemplate: "<button class='k-button k-primary k-form-submit'>Search</button>" + "<button class='k-button k-form-clear'>Clear</button>",
+            validatable: { validationSummary: true },
+            orientation: "vertical",
+            items: [
+                {
+                    field: "BankName", editor: "DropDownList", label: "Bank Name", editorOptions: {
+                        optionLabel: "Select Bank...",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    type: "POST",
+                                    url: "/DropDown/BanksDropDown",
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: 'json',
+                                    cache: false
+                                },
+                            }
+                        },
+                        dataTextField: "bankName",
+                        dataValueField: "bankName"
+                    },
+                },
+                {
+                    field: "AccountNo",
+                    id: "AccountNo",
+                    label: "Account Nos",
+                    editor: function (container, options) {
+                        $("<textarea id='" + options.id + "' class='k-textarea' name='" + options.label + "'  data-bind='value: " + options.field + "'></textarea>")
+                            .appendTo(container);
+                    },
+                    validation: { required: false }
+                },
+            ],
+
+        }).getKendoForm();
+        form.bind("submit", function (e) {
+
+            e.preventDefault();
+            GetNewAccounts(e.model.AccountNo, e.model.BankName.bankName);
+            GetOldAccounts(e.model.AccountNo, e.model.BankName.bankName);
+        });
+
+    };
+    function GetNewAccounts(_AccountNo, _BankName) {
+        $.ajax({
+            type: "POST",
+            url: "/Allocations/GetNewAllocationsFromGivenData",
+            data: {
+                AccountNo: _AccountNo,
+                BankName: _BankName
+            },
+            datatype: "JSON",
+            success: function (Result) {
+                console.log(Result);
+                if (Result[0].resultCode == "1100") {
+                    swal({
+                        title: "Success",
+                        text: Result[0].remarks,
+                        icon: "success"
+                    });
+                    NewAllocationsGrid(Result);
+
+                }
+                else {
+
+                    swal({
+                        title: "Warning",
+                        text: Result[0].remarks,
+                        icon: "warning"
+                    });
+                    $("#NewGrid").data("kendoGrid").dataSource.data([]);
+
+                }
+            },
+            error: function (Result) {
+                swal({
+                    title: "Warning",
+                    text: Result[0].remarks,
+                    icon: "warning"
+                });
+                $("#grid").data("kendoGrid").dataSource.data([]);
+            }
+        })
+    }
+    function GetOldAccounts(_AccountNo, _BankName) {
+        $.ajax({
+            type: "POST",
+            url: "/Allocations/GetOldAllocationsFromGivenData",
+            data: {
+                AccountNo: _AccountNo,
+                BankName: _BankName
+            },
+            datatype: "JSON",
+            success: function (Result) {
+                console.log(Result);
+                if (Result[0].resultCode == "1100") {
+                    swal({
+                        title: "Success",
+                        text: Result[0].remarks,
+                        icon: "success"
+                    });
+                    OldAllocationsGrid(Result);
+
+                }
+                else {
+
+                    swal({
+                        title: "Warning",
+                        text: Result[0].remarks,
+                        icon: "warning"
+                    });
+                    $("#OldGrid").data("kendoGrid").dataSource.data([]);
+
+                }
+            },
+            error: function (Result) {
+                swal({
+                    title: "Warning",
+                    text: Result[0].remarks,
+                    icon: "warning"
+                });
+                $("#grid").data("kendoGrid").dataSource.data([]);
+            }
+        })
+    }
+    function NewAllocationsGrid(Result) {
+        $("#NewGrid").kendoGrid({
+            dataSource: Result,
+            autoSync: true,
+            height: 500,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            toolbar: ["excel", "pdf", "search"],
+            navigatable: true,
+            resizable: true,
+            reorderable: true,
+            groupable: true,
+            schema: {
+                data: "NCRIAttandancePortal.Models.AllocationsDataModels.AllocationsResponseModel",
+                type: 'json'
+            },
+            columns: [
+                {
+                    field: "CustomerName",
+                    title: "Customer Name",
+                },
+                {
+                    field: "AccountNo",
+                    title: "Account No",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "CIF",
+                    title: "CIF",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "CollectorName",
+                    title: "Collector Name",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "AccountStatus",
+                    title: "Account Status",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+
+
+            ]
+        });
+    };
+    function OldAllocationsGrid(Result) {
+        $("#OldGrid").kendoGrid({
+            dataSource: Result,
+            autoSync: true,
+            height: 500,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            toolbar: ["excel", "pdf", "search"],
+            navigatable: true,
+            resizable: true,
+            reorderable: true,
+            groupable: true,
+            schema: {
+                data: "NCRIAttandancePortal.Models.AllocationsDataModels.AllocationsResponseModel",
+                type: 'json'
+            },
+            columns: [
+                {
+                    field: "CustomerName",
+                    title: "Customer Name",
+                },
+                {
+                    field: "AccountNo",
+                    title: "Account No",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "CIF",
+                    title: "CIF",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "CollectorName",
+                    title: "Collector Name",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "AccountStatus",
+                    title: "Account Status",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+
+
+            ]
+        });
+    };
+
+</script>
+
+
+
+

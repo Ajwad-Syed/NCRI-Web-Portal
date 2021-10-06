@@ -1,0 +1,239 @@
+﻿<script>
+    $(document).ready(function () {
+        filterForm();
+    });
+    function SendSms(e) {
+        var grid = $("#grid").getKendoGrid();
+        var id = grid.dataItem($(e.target).closest("tr")).id;
+
+        $.ajax({
+            type: "POST",
+            url: "/Communications/SendSms",
+            data: {
+                id: id
+            },
+            datatype: "JSON",
+            success: function (data) {
+                if (data.resultCode == "1100") {
+                    swal({
+                        title: "Success",
+                        text: "Successfully Sent",
+                        icon: "success"
+                    });
+                }
+                else {
+                    swal({
+                        title: "Info",
+                        text: "No Record",
+                        icon: "info"
+                    });
+                }
+            },
+            error: function (req, status, error) {
+                console.log("Error");
+            }
+        });
+    };
+    function SendEmail(e) {
+        var grid = $("#grid").getKendoGrid();
+        var id = grid.dataItem($(e.target).closest("tr")).id;
+
+        $.ajax({
+            type: "POST",
+            url: "/Communications/SendEmail",
+            data: {
+                id: id
+            },
+            datatype: "JSON",
+            success: function (data) {
+                if (data.resultCode == "1100") {
+                    swal({
+                        title: "Success",
+                        text: "Successfully Sent",
+                        icon: "success"
+                    });
+                }
+                else {
+                    swal({
+                        title: "Info",
+                        text: "No Record",
+                        icon: "info"
+                    });
+                }
+            },
+            error: function (req, status, error) {
+                console.log("Error");
+            }
+        });
+    };
+    function filterForm() {
+        var form = $("#FilterForm").kendoForm({
+            buttonsTemplate: "<button class='k-button k-primary k-form-submit'>Search</button>" + "<button class='k-button k-form-clear'>Clear</button>",
+            validatable: { validationSummary: true },
+            orientation: "vertical",
+            items: [
+                {
+                    field: "Outstanding",
+                    id: "Outstanding",
+                    label: "Outstanding",
+                    validation: { required: false }
+
+                },
+                {
+                    field: "Operation", editor: "DropDownList", label: "Operation", editorOptions: {
+                        optionLabel: "Select Operation...",
+                        dataSource: [
+                            { OperationName: "Greater Than", OperationId: ">" },
+                            { OperationName: "Less Than", OperationId: "<" }
+                        ],
+                        dataTextField: "OperationName",
+                        dataValueField: "OperationId"
+                    }
+                },
+                {
+                    field: "LastUpdated", editor: "DatePicker", label: "Last Updated",
+                    
+                }
+            ]
+
+        }).getKendoForm();
+        form.bind("submit", function (e) {
+            e.preventDefault();
+            SearchResultsGrid(e.model.Operation.OperationId, e.model.Outstanding, e.model.LastUpdated.getFullYear() + "-" + (e.model.LastUpdated.getMonth() + 1) + "-" + e.model.LastUpdated.getDate());
+        });
+    };
+
+    function SearchResultsGrid(OperationId, Outstanding, LastUpdated) {
+        console.log("Done");
+        dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    type: "POST",
+                    url: "/Allocations/GetActiveAllocations",
+                    dataType: 'json',
+                    data: {
+                        Outstanding: Outstanding,
+                        Operation: OperationId,
+                        LastUpdateDate: LastUpdated
+                    },
+                    cache: true,
+                    complete: function (result) {
+                        console.log(result);
+                        if (result.responseJSON[0].resultCode == "1100") {
+                            swal({
+                                title: "Success",
+                                text: "Successfully Loaded",
+                                icon: "success"
+                            });
+
+                        }
+                        else {
+                            $("#grid").data("kendoGrid").setDataSource(new kendo.data.DataSource());
+                            swal({
+                                title: "Warning",
+                                text: result.responseJSON[0].remarks,
+                                icon: "warning"
+                            });
+                        }
+                    },
+                },
+            },
+            pageSize: 20,
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        id: { editable: false, nullable: true },
+                        CustomerName: { editable: true, validation: { required: false } },
+                        AccountStatus: { editable: false, validation: { required: false } },
+                        AccountNo: { editable: false, validation: { required: false } },
+                        Operation: { editable: false, validation: { required: false } },
+                        Outstanding: { editable: false, validation: { required: false } },
+                        AccountNo: { editable: false, validation: { required: false } },
+                        CIF: { editable: false, validation: { required: false } },
+                        CollectorName: { editable: false, validation: { required: false } },
+
+                    }
+                }
+            }
+        });
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            height: 550,
+            toolbar: ["search"],
+            editable: "popup",
+            groupable: true,
+            sortable: {
+                mode: "single",
+                allowUnsort: false
+            },
+            filterable: true,
+            columns: [
+                {
+                    field: "id",
+                    title: "Id",
+                    hidden: false,
+                },
+                {
+                    field: "CustomerName",
+                    title: "Customer Name",
+                },
+                {
+                    field: "CollectorName",
+                    title: "Collector Name",
+
+                },
+                {
+                    field: "AccountNo",
+                    title: "Account No",
+                },
+                {
+                    field: "CIF",
+                    title: "CIF",
+                    hidden: true,
+
+                },
+                {
+                    field: "AccountStatus",
+                    title: "Account Status",
+
+                },
+                {
+                    field: "Outstandings",
+                    title: "Outstandings",
+
+                },
+                {
+                    command: [{
+                        name: "SendSms",
+                        text: "Send Sms",
+                        click: SendSms
+
+                    }, {
+                            name: "SendEmail",
+                            text: "Send Email",
+                            click: SendEmail
+
+                        }],
+                    title: "Actions",
+                    width: "250px"
+                },
+
+
+
+            ]
+        });
+    };
+</script>
+<div class="container-fluid col-6 border-right border-top border-left border-bottom">
+    <h4>Search</h4>
+    <hr />
+    <form id="FilterForm"></form>
+</div>
+<br />
+<h4>Search Results</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12 float-right" id="grid"></div>
+</div>

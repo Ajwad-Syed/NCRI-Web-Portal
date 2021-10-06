@@ -1,0 +1,181 @@
+﻿@{
+    ViewBag.Title = "Manage Banks";
+}
+
+
+
+<div id="grid"></div>
+
+<script>
+    $(document).ready(function () {
+        dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    type: "POST",
+                    url: "/BankCodes/GetBankCodes",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    cache: true
+                },
+                update: {
+                    type: "POST",
+                    url: "/BankCodes/UpdateBankCode",
+                    dataType: 'json',
+                    complete: function (result) {                        
+                        if (result.responseJSON.resultCode == "1100") {
+                            swal({
+                                title: "Success",
+                                text: result.responseJSON.remarks,
+                                icon: "success"
+                            });
+                            $("#grid").data("kendoGrid").dataSource.read();
+                        }
+                        else {
+                            swal({
+                                title: "Warning",
+                                text: result.responseJSON.remarks,
+                                icon: "warning"
+                            });
+                        }
+                    },
+                    error: function () {
+                        swal({
+                            title: "Warning",
+                            text: result.responseJSON.remarks,
+                            icon: "warning"
+                        });
+                    }
+
+                },
+                create: {
+                    type: "POST",
+                    url: "/BankCodes/AddNewBankCode",
+                    dataType: 'json',
+                    complete: function (result) {
+                        if (result.responseJSON.resultCode == "1100") {
+                            swal({
+                                title: "Success",
+                                text: result.responseJSON.remarks,
+                                icon: "success"
+                            });
+                            $("#grid").data("kendoGrid").dataSource.read();
+                        }
+                        else {
+                            swal({
+                                title: "Warning",
+                                text: result.responseJSON.remarks,
+                                icon: "warning"
+                            });
+                        }
+                    },
+                    error: function () {
+                        swal({
+                            title: "Warning",
+                            text: result.responseJSON.remarks,
+                            icon: "warning"
+                        });
+                    }
+
+                },
+                destroy: {
+                    type: "POST",
+                    url: "/BankCodes/DeleteBankCode",
+                    dataType: 'json',
+                    complete: function (result) {
+                        if (result.responseJSON.resultCode == "1100") {
+                            swal({
+                                title: "Success",
+                                text: result.responseJSON.remarks,
+                                icon: "success"
+                            });
+                           /* $("#grid").data("kendoGrid").dataSource.read();*/
+                        }
+                        else {
+                            swal({
+                                title: "Warning",
+                                text: result.responseJSON.remarks,
+                                icon: "warning"
+                            });
+                        }
+                    },
+                    error: function () {
+                        swal({
+                            title: "Warning",
+                            text: result.responseJSON.remarks,
+                            icon: "warning"
+                        });
+                    }
+
+                },
+
+            },
+            pageSize: 20,
+            schema: {
+                model: {
+                    id: "bankCodeId",
+                    fields: {
+                        bankCodeId: { editable: false, nullable: true },
+                        code: { validation: { required: false } },
+                        companyCodes: { validation: { required: false } },
+                        bankName: { validation: { required: false } },
+                        subType: { validation: { required: false } },
+                        bankremarks: { validation: { required: false } },
+                        contactStatus: { validation: { required: false } },
+                    }
+                }
+            }
+        });
+        $("#grid").kendoGrid({
+            filterable: true,
+            sortable: true,
+            groupable: true,
+            dataSource: dataSource,
+            pageable: true,
+            height: 550,
+            toolbar: ["create" ,"search"],
+            editable: "popup",
+            columns: [
+                {
+                    field: "bankCodeId",
+                    title: "Id",
+                    hidden: true,
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "code",
+                    title: "Code",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "companyCodes",
+                    title: "Company Codes",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "bankName",
+                    title: "Bank Name",
+                  
+                },
+                {
+                    field: "subType",
+                    title: "Sub Type",
+                   
+                },
+                {
+                    field: "bankremarks",
+                    title: "Bank Remarks",
+                  
+                }, {
+                    field: "contactStatus",
+                    title: "Contact Status",
+               
+                },
+                {
+                    command: ["edit","destroy"],
+                    title: "Actions",
+                    width: "250px"
+                },
+            ]
+        });
+    });
+</script>

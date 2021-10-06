@@ -1,0 +1,107 @@
+﻿
+@{
+    ViewBag.Title = "NCRI - Login";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+<!DOCTYPE html>
+
+<!-- Main -->
+<div class="d-md-flex h-md-100 align-items-center">
+    <div class="col-md-4 p-0 bg-green h-md-100">
+        <div class="text-white d-md-flex align-items-center h-100 p-5 text-center justify-content-center">
+            <div class="logoarea pt-5 pb-5">
+                <img class="mb-0 mt-3 display-4" src="~/Images/NCRI-Pak-Light.png" style="width:35%">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 p-0 bg-white h-md-100 loginarea">
+        <div class="d-md-flex align-items-center h-md-100 p-5 justify-content-center">
+            <div class="border rounded p-5">
+                <h3 class="mb-4 text-center">Sign In</h3>
+                <form id="form"></form>
+            </div>
+        </div>
+    </div>
+    <div id="wrapper" class="overlay">
+        <div class="d-flex flex-column h-100 justify-content-center align-items-center">
+            <img src="~/Images/ncri.svg" width="300" alt="NCRI LOGO">
+        </div>
+    </div>
+</div>
+        <!-- End Main -->
+        <script>
+            $(document).ready(function () {
+                $("#wrapper").hide();
+                LoginForm();
+            });
+            function LoginForm() {
+                var form = $("#form").kendoForm({
+                    buttonsTemplate: "<button class='btn btn-success btn-round btn-block shadow-sm'>Submit</button>" ,
+                    validatable: { validationSummary: true },
+                    orientation: "vertical",
+                    items: [
+                        {
+                            field: "UserName",
+                            id: "UserName",
+                            label: "User Name",
+                            validation: { required: false }
+                        },
+                        {
+                            field: "Password",
+                            id: "Password",
+                            editor: function (container, options) {
+                                $("<input type='password' class='k-textbox' name='" + options.label + "'  data-bind='value: " + options.field + "'></input>")
+                                    .appendTo(container);
+                            },
+                            validation: { required: false }
+                        },
+                    ],
+
+                }).getKendoForm();
+                form.bind("submit", function (e) {
+                    $("#wrapper").show();
+                    e.preventDefault();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Login/LoginUser",
+                        data: {
+                            UserName: e.model.UserName,
+                            Password: e.model.Password,
+                        },
+                        datatype: "JSON",
+                        success: function (Result) {
+                            $("#wrapper").hide();
+                            if (Result.resultCode == "1100") {
+                                swal({
+                                    title: "Success",
+                                    text: Result.remarks,
+                                    icon: "success"
+                                });
+                                window.location.replace("/Home/Index");
+                            }
+                            else {
+
+                                swal({
+                                    title: "Warning",
+                                    text: Result.remarks,
+                                    icon: "warning"
+                                });
+
+                            }
+                        },
+                        error: function (Result) {
+                            $("#wrapper").hide();
+                            swal({
+                                title: "Warning",
+                                text: Result.remarks,
+                                icon: "warning"
+                            });
+                        }
+                    })
+
+                });
+            };
+        </script>
+
+
+

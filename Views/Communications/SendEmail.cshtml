@@ -1,0 +1,81 @@
+﻿<script>
+    $(document).ready(function () {
+        EmailForm();
+    });
+    function EmailForm() {
+        var form = $("#EmailForm").kendoForm({
+            buttonsTemplate: "<button class='k-button k-primary k-form-submit'>Send</button>" + "<button class='k-button k-form-clear'>Clear</button>",
+            validatable: { validationSummary: true },
+            orientation: "vertical",
+            items: [
+                {
+                    field: "To",
+                    id: "To",
+                    label: "To",
+                    validation: { required: false }
+
+                },
+                {
+                    field: "Subject",
+                    id: "Subject",
+                    label: "Subject",
+                    validation: { required: false }
+                },
+                {
+                    field: "Body",
+                    id: "Body",
+                    label: "Body",
+                    validation: { required: false },
+                    editor: function (container, options) {
+                        $("<textarea class='k-textarea' name='" + options.label + "'  data-bind='value: " + options.field + "'></textarea>")
+                            .appendTo(container);
+                    },
+
+                }
+            ]
+
+        }).getKendoForm();
+        form.bind("submit", function (e) {
+            e.preventDefault();
+            SendEmail(e.model.Body, e.model.To, e.model.Subject);
+        });
+    };
+    function SendEmail(Body, To, Subject) {  
+        $.ajax({
+            type: "POST",
+            url: "/Communications/SendCustomEmail",
+            data: {
+                subject: Subject,
+                to: To,
+                body: Body
+            },
+            datatype: "JSON",
+            success: function (data) {
+                if (data.resultCode == "1100") {
+                    swal({
+                        title: "Success",
+                        text: "Successfully Sent",
+                        icon: "success"
+                    });
+                }
+                else {
+                    swal({
+                        title: "Info",
+                        text: "No Record",
+                        icon: "info"
+                    });
+                }
+            },
+            error: function (req, status, error) {
+                console.log("Error");
+            }
+        });
+    };
+</script>
+<div class="container-fluid col-6 border-right border-top border-left border-bottom">
+    <h4>Send Email</h4>
+    <hr />
+    <form id="EmailForm"></form>
+</div>
+<br />
+

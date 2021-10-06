@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="770b8f1d051540f98f6f24d69314691c" Name="Diagram1" ZoomLevel="11">
+        <EntityTypeShape EntityType="DBMODEL.Attendence" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.BankCode" Width="1.5" PointX="5.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.BankFormatSheetMapping" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.BankHeadersDetail" Width="1.5" PointX="7.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.CallDetail" Width="1.5" PointX="5.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.callFromCode" Width="1.5" PointX="7.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.CategoryTypeSheetMapping" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.contactThrougCode" Width="1.5" PointX="9.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Customer" Width="1.5" PointX="9.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.CustomersData" Width="1.5" PointX="3" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.CustomersOld" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.detail_status" Width="1.5" PointX="13.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.ExcelSheetLog" Width="1.5" PointX="0.75" PointY="19.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.field_visit" Width="1.5" PointX="13.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.field_visit_officer" Width="1.5" PointX="13.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.field_visit_report" Width="1.5" PointX="13.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.field_visit_report_images" Width="1.5" PointX="15.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.IgnoreWordList" Width="1.5" PointX="15.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Landline_No_Details" Width="1.5" PointX="5.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Ncri_Staff" Width="1.5" PointX="15.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.payment_frequency" Width="1.5" PointX="15.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Payment_Plan_Record" Width="1.5" PointX="15.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Payment_Record" Width="1.5" PointX="17.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.PHONE_EXTENSION" Width="1.5" PointX="17.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.ProductTypeSheetMapping" Width="1.5" PointX="17.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.PTCL_Data" Width="1.5" PointX="17.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.ptcl_data_recived" Width="1.5" PointX="13.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.recieverCode" Width="1.5" PointX="15.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.RegisteredBankCode" Width="1.5" PointX="17.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.SheetDatabaseMapping" Width="1.5" PointX="5.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.special_access" Width="1.5" PointX="19.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Target" Width="1.5" PointX="19.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.TrackRecord" Width="1.5" PointX="19.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.User" Width="1.5" PointX="15.75" PointY="20.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.visitStatusCode" Width="1.5" PointX="21.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Allocation" Width="1.5" PointX="21.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.CallsData" Width="1.5" PointX="23.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.CollectorsCallsData" Width="1.5" PointX="23.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Hourly_Report" Width="1.5" PointX="5.75" PointY="23.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.Report_Table" Width="1.5" PointX="23.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBMODEL.test1" Width="1.5" PointX="23.75" PointY="15.75" IsExpanded="true" />
+        <AssociationConnector Association="DBMODEL.FK_CustomersData_ExcelSheetLog" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

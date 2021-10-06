@@ -1,0 +1,220 @@
+﻿
+
+<script>
+    function roleDropDownEditor(container, options) {
+        $('<input name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                placeholder: "Select",
+                dataTextField: "roleName",
+                dataValueField: "roleId",
+                dataSource: [
+                    { roleName: "Admin", roleId: "1" },
+                    { roleName: "Collector", roleId: "2" },
+                    { roleName: "Manager", roleId: "3" },
+                    { roleName: "Senior Manager", roleId: "4" },
+                    { roleName: "Data Entry Operator", roleId: "5" }
+                ],
+                optionLabel: "Please Select...",
+            });
+    }
+    $(document).ready(function () {
+        filterForm();
+    });
+    function filterForm() {
+        var form = $("#FilterForm").kendoForm({
+            buttonsTemplate: "<button class='k-button k-primary k-form-submit'>Search</button>" + "<button class='k-button k-form-clear'>Clear</button>",
+            validatable: { validationSummary: true },
+            orientation: "vertical",
+            items: [
+                {
+                    field: "BankName", editor: "DropDownList", label: "Bank Name", editorOptions: {
+                        optionLabel: "Select Bank...",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    type: "POST",
+                                    url: "/DropDown/BanksDropDown",
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: 'json',
+                                    cache: false
+                                },
+                            }
+                        },
+                        dataTextField: "bankName",
+                        dataValueField: "bankName"
+                    },
+                },
+            ],
+
+        }).getKendoForm();
+        form.bind("submit", function (e) {
+
+            e.preventDefault();
+            SearchResultsGrid( e.model.BankName.bankName);
+        });
+
+    };
+    function SearchResultsGrid(bankName) {
+        dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    type: "POST",
+                    url: "/Allocations/GetDupliacteCaseIdsAllocationsFromBankName",
+                    dataType: 'json',
+                    data: {
+                        BankName: bankName
+                    },
+                    cache: true,
+                    complete: function (result) {
+                        console.log(result);
+                        if (result.responseJSON[0].resultCode == "1100") {
+                            swal({
+                                title: "Success",
+                                text: "Successfully Loaded",
+                                icon: "success"
+                            });
+
+                        }
+                        else {
+                            $("#grid").data("kendoGrid").setDataSource(new kendo.data.DataSource());
+                            swal({
+                                title: "Warning",
+                                text: result.responseJSON[0].remarks,
+                                icon: "warning"
+                            });
+                        }
+                    },
+                },
+                update: {
+                    type: "POST",
+                    url: "/Allocations/UpdateAccountByAccountId",
+                    dataType: 'json',
+                    complete: function (result) {
+                        if (result.responseJSON.resultCode == "1100") {
+                            swal({
+                                title: "Success",
+                                text: "Successfully Updated",
+                                icon: "success"
+                            });
+                            $("#grid").data("kendoGrid").dataSource.read();
+                        }
+                        else {
+                            swal({
+                                title: "Warning",
+                                text: result.responseJSON.remarks,
+                                icon: "warning"
+                            });
+                        }
+                    },
+                    error: function () {
+                        swal({
+                            title: "Warning",
+                            text: "There Was A Fatal Error Connecting To Server",
+                            icon: "warning"
+                        });
+                    }
+
+                },
+            },
+            pageSize: 20,
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        id: { editable: false, nullable: true },
+                        caseId: { validation: { required: false } },
+                        CustomerName: { editable: true, validation: { required: false } },
+                        AccountStatus: { editable: false, validation: { required: false } },
+                        AccountNo: { editable: false, validation: { required: false } },
+                        CIF: { editable: false, validation: { required: false } },
+                        CollectorName: { editable: false, validation: { required: false } },
+
+                    }
+                }
+            }
+        });
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            height: 550,
+            toolbar: ["search"],
+            editable: "popup",
+            groupable: true,
+            sortable: {
+                mode: "single",
+                allowUnsort: false
+            },
+            filterable: true,
+            columns: [
+                {
+                    field: "id",
+                    title: "Id",
+                    hidden: false,
+                },
+                {
+                    field: "caseId",
+                    title: "Case Id",
+                },
+                {
+                    field: "CustomerName",
+                    title: "Customer Name",
+                },
+                {
+                    field: "CollectorName",
+                    title: "Collector Name",
+
+                },
+                {
+                    field: "AccountNo",
+                    title: "Account No",
+                },
+                {
+                    field: "CIF",
+                    title: "CIF",
+                    hidden: true,
+                    editor: roleDropDownEditor,
+
+                },
+                {
+                    field: "AccountStatus",
+                    title: "Account Status",
+
+                },
+                {
+                    command: ["edit"
+
+                    ],
+                    title: "Actions",
+                    width: "250px"
+                },
+
+
+
+            ]
+        });
+    };
+
+
+</script>
+<style>
+    .k-edit-label:first-child {
+        display: none;
+    }
+</style>
+<div class="container col-md-9 border-right border-top border-left border-bottom">
+    <h4>Search</h4>
+    <hr />
+    <form id="FilterForm"></form>
+</div>
+<br />
+<h4>Search Results</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12 float-right" id="grid"></div>
+</div>
+
+
+
+
+

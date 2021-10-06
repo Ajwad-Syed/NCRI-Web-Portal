@@ -1,0 +1,323 @@
+﻿@{
+    ViewBag.Title = "Manage Allocations With Account Nos";
+}
+
+
+<div class="row">
+    <div class="container col-md-3 border-right border-bottom">
+
+        <h4>Assignment</h4>
+        <hr />
+        <form id="form"></form>
+    </div>
+    <div class="container col-md-9 border-left border-bottom">
+        <h4>Search</h4>
+        <hr />
+        <form id="FilterForm"></form>
+    </div>
+</div>
+<br />
+<h4>Search Results</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12 float-right" id="grid"></div>
+</div>
+<div id="wrapper" class="overlay">
+    <div class="d-flex flex-column h-100 justify-content-center align-items-center">
+        <img src="~/Images/ncri.svg" width="300" alt="NCRI LOGO">
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#wrapper").hide();
+        allocationForm();
+        var loader = $('#loader').kendoLoader({
+            visible: true,
+            themeColor: 'success',
+            type: "infinite-spinner",
+            size: "large"
+        }).data('kendoLoader');
+        //function onDataBound(e) {
+        //    $('.k-multiselect .k-input').unbind('keyup');
+        //    $('.k-multiselect .k-input').on('keyup', onClickEnter);
+        //}
+        //function onClickDownKey(e) {
+        //    if (e.keyCode === 40) {
+        //        console.log("Comming");
+        //        var widget = $('#AccountNos').getKendoMultiSelect();
+        //        var dataSource = widget.dataSource;
+        //        var input = $('.k-multiselect .k-input');
+        //        var value = input.val().trim();
+        //        if (!value || value.length === 0) {
+        //            return;
+        //        }
+        //        var newItem = {
+        //            _accountNos: value,
+        //            _accountNos: value
+        //        };
+
+        //        dataSource.add(newItem);
+        //        var newValue = newItem.ProductID;
+        //        widget.value(widget.value().concat([newValue]));
+        //    }
+        //}
+        //$("#AccountNos").kendoMultiSelect({
+        //    dataTextField: "_accountNos",
+        //    dataValueField: "_accountNos",
+        //    dataSource: {
+        //        data: []
+        //    },
+        //    dataBound: onDataBound
+        //});
+        filterForm();
+
+    });
+    function allocationForm() {
+        var form = $("#form").kendoForm({
+            buttonsTemplate: "<button class='k-button k-primary k-form-submit'>Assign</button>" + "<button class='k-button k-form-clear'>Clear</button>",
+            validatable: { validationSummary: true },
+            orientation: "veritcal",
+            items: [
+                {
+                    field: "CollectorName", editor: "DropDownList", label: "Collector Name", editorOptions: {
+                        optionLabel: "Select Collector...",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    type: "POST",
+                                    url: "/DropDown/CollectorsDropDown",
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: 'json',
+                                    cache: false
+                                },
+                            }
+                        },
+                        dataTextField: "userName",
+                        dataValueField: "userName"
+                    }
+                },
+                {
+                    field: "AccountNos",
+                    editor: function (container, options) {
+                        $("<textarea class='k-textarea' name='" + options.label + "'  data-bind='value: " + options.field + "'></textarea>")
+                            .appendTo(container);
+                    },
+                    id: "AccountNos",
+                    label: "Account Nos",
+                    hint: "Hint:Copy And Paste",
+                    validation: { required: false }
+                },
+            ],
+
+        }).getKendoForm();
+        form.bind("submit", function (e) {
+            $("#wrapper").show();
+            console.log(e.model);
+            e.preventDefault();
+            
+            $.ajax({
+                type: "POST",
+                url: "/Allocations/UpdateCollectorAllocationsWithAccountnos",
+                data: {
+                    AccountNos: e.model.AccountNos,
+                    CollectorName: e.model.CollectorName.userName,
+                },
+                datatype: "JSON",
+                success: function (Result) {
+                    $("#wrapper").hide();
+                    if (Result.resultCode == "1100") {
+                        GetAllocations();
+                    }
+                    else {
+
+                        swal({
+                            title: "Warning",
+                            text: Result.remarks,
+                            icon: "warning"
+                        });
+
+                    }
+                },
+                error: function (Result) {
+                    swal({
+                        title: "Warning",
+                        text: Result.remarks,
+                        icon: "warning"
+                    });
+                }
+            })
+            console.log(e);
+        });
+    };
+    function filterForm() {
+        var form = $("#FilterForm").kendoForm({
+            buttonsTemplate: "<button class='k-button k-primary k-form-submit'>Search</button>" + "<button class='k-button k-form-clear'>Clear</button>",
+            validatable: { validationSummary: true },
+            orientation: "vertical",
+            items: [
+                {
+                    field: "_collectorName",
+                    id: "_collectorName",
+                    label: "Collector Name",
+                    editor: function (container, options) {
+                        $("<textarea id='" + options.id + "' class='k-textarea' name='" + options.label + "'  data-bind='value: " + options.field + "'></textarea>")
+                            .appendTo(container);
+                    },
+                    validation: { required: false }
+                },
+                {
+                    field: "AccountNo",
+                    id: "AccountNo",
+                    label: "AccountNo",
+                    editor: function (container, options) {
+                        $("<textarea id='" + options.id + "' class='k-textarea' name='" + options.label + "'  data-bind='value: " + options.field + "'></textarea>")
+                            .appendTo(container);
+                    },
+                    validation: { required: false }
+                },
+                {
+                    field: "CIF",
+                    id: "CIF",
+                    label: "CIF",
+                    editor: function (container, options) {
+                        $("<textarea id='" + options.id + "' class='k-textarea' name='" + options.label + "'  data-bind='value: " + options.field + "'></textarea>")
+                            .appendTo(container);
+                    },
+                    validation: { required: false }
+                },
+            ],
+
+        }).getKendoForm();
+        form.bind("submit", function (e) {
+
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "/Allocations/GetAllocations",
+                data: {
+                    AccountNo: e.model.AccountNo,
+                    CollectorName: e.model._collectorName,
+                    CIF: e.model.CIF
+                },
+                datatype: "JSON",
+                success: function (Result) {
+                    console.log(Result);
+                    if (Result[0].resultCode == "1100") {
+                        swal({
+                            title: "Success",
+                            text: Result[0].remarks,
+                            icon: "success"
+                        });
+                        AllocationsGrid(Result);
+
+                    }
+                    else {
+
+                        swal({
+                            title: "Warning",
+                            text: Result[0].remarks,
+                            icon: "warning"
+                        });
+                        $("#grid").data("kendoGrid").dataSource.data([]);
+
+                    }
+                },
+                error: function (Result) {
+                    swal({
+                        title: "Warning",
+                        text: Result.remarks,
+                        icon: "warning"
+                    });
+                    $("#grid").data("kendoGrid").dataSource.data([]);
+                }
+            })
+
+        });
+    };
+    function AllocationsGrid(Result) {
+        $("#grid").kendoGrid({
+            dataSource: Result,
+            autoSync: true,
+            height: 500,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            toolbar: ["excel", "pdf", "search"],
+            navigatable: true,
+            resizable: true,
+            reorderable: true,
+            groupable: true,
+            schema: {
+                data: "NCRIAttandancePortal.Models.AllocationsDataModels.AllocationsResponseModel",
+                type: 'json'
+            },
+            columns: [
+                {
+                    field: "CustomerName",
+                    title: "Customer Name",
+                },
+                {
+                    field: "AccountNo",
+                    title: "Account No",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "CIF",
+                    title: "CIF",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+                {
+                    field: "CollectorName",
+                    title: "Collector Name",
+                    /* format: "{0:MM/dd/yyyy}"*/
+                },
+
+
+            ]
+        });
+    };
+    function GetAllocations() {
+        $.ajax({
+            type: "POST",
+            url: "/Allocations/GetAllocations",
+            data: {
+                AccountNo: $("#AccountNo").val(),
+                CollectorName: $("#_collectorName").val(),
+                CIF: $("#CIF").val(),
+            },
+            datatype: "JSON",
+            success: function (Result) {
+                console.log(Result);
+                if (Result[0].resultCode == "1100") {
+                    swal({
+                        title: "Success",
+                        text: "Updated And Grid Loaded",
+                        icon: "success"
+                    });
+                    AllocationsGrid(Result);
+
+                }
+                else {
+
+                    swal({
+                        title: "Success",
+                        text: "Updated And Grid Loaded",
+                        icon: "success"
+                    });
+                    $("#grid").data("kendoGrid").dataSource.data([]);
+
+                }
+            },
+            error: function (Result) {
+
+                swal({
+                    title: "Warning",
+                    text: Result.remarks,
+                    icon: "warning"
+                });
+                $("#grid").data("kendoGrid").dataSource.data([]);
+            }
+        })
+    };
+
+</script>

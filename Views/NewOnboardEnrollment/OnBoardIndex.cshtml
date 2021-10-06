@@ -1,0 +1,129 @@
+﻿<script>
+    $(document).ready(function () {
+        onBoardForm();
+    });
+    function onBoardForm() {
+        var form = $("#Form").kendoForm({
+            buttonsTemplate: "<button class='k-button k-primary k-form-submit'>Enroll</button>" + "<button class='k-button k-form-clear'>Cancel</button>",
+            validatable: { validationSummary: true },
+            orientation: "vertical",
+            items: [
+                {
+                    field: "FirstName",
+                    id: "FirstName",
+                    label: "First Name",
+                    validation: { required: false }
+                },
+                {
+                    field: "LastName",
+                    id: "LastName",
+                    label: "Last Name",
+                    validation: { required: false }
+                },
+                {
+                    field: "CRMDisplayName",
+                    id: "CRMDisplayName",
+                    label: "CRM Display Name",
+                    validation: { required: false }
+                },
+                {
+                    field: "SamAccountName",
+                    id: "SamAccountName",
+                    label: "Sam Account Name",
+                    validation: { required: false }
+                },
+                {
+                    field: "Email",
+                    id: "Email",
+                    label: "Email",
+                    validation: { required: false }
+                },                
+                {
+                    field: "superVisor",
+                    id: "superVisor",
+                    label: "Super Visor",
+                    validation: { required: false }
+                },
+                {
+                    field: "type",
+                    id: "type",
+                    label: " User Role",
+                    editor: roleDropDownEditor,
+                    validation: { required: false }
+                },
+            ],
+
+        }).getKendoForm();
+        form.bind("submit", function (e) {
+
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "/User/AddUser",
+                data: {
+                    userFirstName: e.model.FirstName,
+                    userLastName: e.model.LastName,
+                    userCRMDisplayName: e.model.CRMDisplayName,
+                    userSamAccountName: e.model.SamAccountName,
+                    userEmail: e.model.Email,
+                    type: e.model.type.roleId,
+                    superVisor: e.model.superVisor
+                },
+                datatype: "JSON",
+                success: function (Result) {
+                    console.log(Result);
+                    if (Result.resultCode == "1100") {
+                        swal({
+                            title: "Success",
+                            text: Result.remarks,
+                            icon: "success"
+                        });
+                    }
+                    else {
+
+                        swal({
+                            title: "Warning",
+                            text: Result.remarks,
+                            icon: "warning"
+                        });                      
+
+                    }
+                },
+                error: function (Result) {
+                    swal({
+                        title: "Warning",
+                        text: Result.remarks,
+                        icon: "warning"
+                    });
+                    
+                }
+            })
+
+        });
+    };
+    function roleDropDownEditor(container, options) {
+        $('<input name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                placeholder: "Select",
+                dataTextField: "roleName",
+                dataValueField: "roleId",
+                dataSource: [
+                    { roleName: "Admin", roleId: "1" },
+                    { roleName: "Collector", roleId: "2" },
+                    { roleName: "Manager", roleId: "3" },
+                    { roleName: "Senior Manager", roleId: "4" },
+                    { roleName: "Data Entry Operator", roleId: "5" }
+                ],
+                optionLabel: "Please Select...",
+            });
+    }
+</script>
+<div class="row border-bottom border-success pb-5">
+    <div class="col-6 offset-3  border-danger border-left border-right">
+        <form id="Form" class=" border-bottom border-top border-info pt-3 pb-3"  ></form>
+    </div>
+</div>
+
+
+

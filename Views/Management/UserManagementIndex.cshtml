@@ -1,0 +1,285 @@
+﻿<script>
+            function roleDropDownEditor(container, options) {
+                $('<input name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        placeholder: "Select",
+                        dataTextField: "roleName",
+                        dataValueField: "roleId",
+                        dataSource: [
+                            { roleName: "Admin", roleId:"1" },
+                            { roleName: "Collector",roleId:"2" },
+                            { roleName: "Manager",roleId:"3" },
+                            { roleName: "Senior Manager",roleId:"4" },
+                            { roleName: "Data Entry Operator",roleId:"5" }
+                        ],
+                        optionLabel: "Please Select...",
+                    });
+    }
+            function statusDropDownEditor(container, options) {
+                $('<input name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        placeholder: "Select",
+                        dataTextField: "statusName",
+                        dataValueField: "statusName",
+                        dataSource: [
+                            { statusName: "Active"},
+                            { statusName: "Notactive" },
+
+                        ],
+                        optionLabel: "Please Select...",
+                    });
+            }          
+    $(document).ready(function () {
+                dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            type: "POST",
+                            url: "/User/GetAllUsers",
+                            dataType: 'json',
+                            cache: true
+                        },
+                        create: {
+                            type: "POST",
+                            url: "/User/AddUser",
+                            dataType: 'json',
+                            complete: function (result) {
+                                if (result.responseJSON.resultCode == "1100") {
+                                    swal({
+                                        title: "Success",
+                                        text: "Successfully Added",
+                                        icon: "success"
+                                    });
+                                    $("#grid").data("kendoGrid").dataSource.read();
+                                }
+                                else {
+                                    swal({
+                                        title: "Warning",
+                                        text: result.responseJSON.remarks ,
+                                        icon: "warning"
+                                    });
+                                }
+                            },
+                            error: function () {
+                                swal({
+                                    title: "Warning",
+                                    text: "There Was A Fatal Error Connecting To Server",
+                                    icon: "warning"
+                                });
+                            }
+
+                        },
+                        update: {
+                            type: "POST",
+                            url: "/User/UpdateUser",
+                            dataType: 'json',
+                            complete: function (result) {
+                                if (result.responseJSON.resultCode == "1100") {
+                                    swal({
+                                        title: "Success",
+                                        text: "Successfully Updated",
+                                        icon: "success"
+                                    });
+                                    $("#grid").data("kendoGrid").dataSource.read();
+                                }
+                                else {
+                                    swal({
+                                        title: "Warning",
+                                        text: result.responseJSON.remarks,
+                                        icon: "warning"
+                                    });
+                                }
+                            },
+                            error: function () {
+                                swal({
+                                    title: "Warning",
+                                    text: "There Was A Fatal Error Connecting To Server",
+                                    icon: "warning"
+                                });
+                            }
+
+                        },
+                        destroy: {
+                            type: "POST",
+                            url: "/User/DeleteUser",
+                            dataType: 'json',
+                            complete: function (result) {
+                                if (result.responseJSON.resultCode == "1100") {
+                                    swal({
+                                        title: "Success",
+                                        text: "Successfully Deleted",
+                                        icon: "success"
+                                    });
+                                    $("#grid").data("kendoGrid").dataSource.read();
+                                }
+                                else {
+                                    swal({
+                                        title: "Warning",
+                                        text: result.responseJSON.remarks ,
+                                        icon: "warning"
+                                    });
+                                }
+                            },
+                            error: function () {
+                                swal({
+                                    title: "Warning",
+                                    text: "There Was A Fatal Error Connecting To Server",
+                                    icon: "warning"
+                                });
+                            }
+
+                        },
+                    },
+                    pageSize: 20,
+                    schema: {
+                        model: {
+                            id: "userId",
+                            fields: {
+                                userId: {  editable: false, nullable: true },
+                                userFirstName: { validation: { required: false } },
+                                userLastName: { validation: { required: false } },
+                                userCRMDisplayName: { validation: { required: false } },
+                                userSamAccountName: { validation: { required: false } },
+                                userPassword: {
+                                    editable: false, nullable: true
+                                    //validation: {
+                                    //    required: false,
+                                    //    message: "Password Is Required",
+                                    //    userPasswordvalidation: function (input) {
+                                    //        if (input.is("[name='userPassword']") && input.val() != "") {
+                                    //            input.attr("data-userPasswordvalidation-msg", "Password Should Be Min Of 8 Letters or Number");
+                                    //            return /[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]/.test(input.val());
+                                    //        }
+
+                                    //        return true;
+                                    //    }
+                                    },
+                                userEmail: { validation: { required: false } },
+                                type: {
+                                    validation: {
+                                        required: true,
+                                        typevalidation: function (input) {
+
+                                            if (input.is("[name='type']") && input.val() == "")
+                                            {
+                                                input.attr("data-typevalidation-msg", "User Role Is Required");
+                                                return false
+                                            }
+                                            return true
+
+                                        }} },
+                                phone: { validation: { required: false } },
+                                status: {
+                                    validation: {
+                                        required: true,
+                                        statusvalidation: function (input) {
+
+                                            if (input.is("[name='status']") && input.val() == "") {
+                                                input.attr("data-statusvalidation-msg", "Status Is Required");
+                                                return false
+                                            }
+                                            return true
+
+                                        }
+                                    }
+                                },
+                                superVisor: { validation: { required: false } },
+                            }
+                        }
+                    }
+                });
+
+                $("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    pageable: true,
+                    height: 550,
+                    toolbar: ["create", "search"],
+                    editable: "popup",
+                    sortable: {
+                        mode: "single",
+                        allowUnsort: false
+                    },
+                    filterable:true,
+                    columns: [
+                        {
+                            field: "userId",
+                            title: "Id",
+                            hidden: true,
+                        },
+                        {
+                            field: "userFirstName",
+                            title: "First Name",
+                        },
+                        {
+                            field: "userLastName",
+                            title: "Last Name",
+                        },
+                        {
+                            field: "userCRMDisplayName",
+                            title: "CRM User Name",
+                        },
+                        {
+                            field: "userSamAccountName",
+                            title: "Sam Account Name",
+                        },
+                        {
+                            field: "userPassword",
+                            title: "Password",
+
+                        },
+                        {
+                            field: "userEmail",
+                            title: "Email",
+                        },
+                        {
+                            field: "type",
+                            title: "User Role",
+                            hidden: true,
+                            editor: roleDropDownEditor,
+
+                        },
+                        {
+                            field: "phone",
+                            title: "User Phone No",
+
+                        },
+                        {
+                            field: "status",
+                            title: "User Status",
+                            editor: statusDropDownEditor,
+                        },
+                        {
+                            field: "superVisor",
+                            title: "User Super Visor",
+
+                        },
+                        {
+                            command: ["edit", "destroy"
+
+                            ],
+                            title: "Actions",
+                            width: "250px"
+                        },
+
+
+
+                    ]
+                });
+            });
+
+
+</script>
+<style>
+    .k-edit-label:first-child {
+        display: none;
+    }
+    .k-edit-label:nth-child(11) {
+        display: none;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12 float-right" id="grid"></div>
+</div>
+
+
